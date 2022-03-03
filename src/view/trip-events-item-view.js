@@ -1,5 +1,5 @@
 export const createTripEventsItemTemplate = () => (
-    `<li class="trip-events__item">
+  `<li class="trip-events__item">
                 <li class="trip-events__item">
                 <div class="event">
                   <time class="event__date" datetime="2019-03-18">MAR 18</time>
@@ -37,4 +37,4 @@ export const createTripEventsItemTemplate = () => (
                   </button>
                 </div>
               </li>`
-  );
+);
