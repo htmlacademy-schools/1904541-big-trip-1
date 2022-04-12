@@ -1,21 +1,21 @@
 import { getRandomInteger, getRandomElement, generateTime } from '../tool.js';
 
 const locations = () => {
-    const cities = [
-      'Moscow',
-      'Yekaterinburg',
-      'Saint Petersburg',
-      'Novosibirsk',
-      'Kazan',
-      'Nizhny Novgorod',
-      'Chelyabinsk',
-      'Geneva',
-      'Amsterdam',
-      'Chamonix',
-      'Samara',
-      'Omsk'
-    ];
-    return getRandomElement(cities);
+  const cities = [
+    'Moscow',
+    'Yekaterinburg',
+    'Saint Petersburg',
+    'Novosibirsk',
+    'Kazan',
+    'Nizhny Novgorod',
+    'Chelyabinsk',
+    'Geneva',
+    'Amsterdam',
+    'Chamonix',
+    'Samara',
+    'Omsk'
+  ];
+  return getRandomElement(cities);
 };
 
 const eventTypes = () => {
