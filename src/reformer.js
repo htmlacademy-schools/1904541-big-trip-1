@@ -10,4 +10,3 @@ export const reformPoint = (point) => ({
   offers: point.offers,
   type: point.type,
 });
- 
