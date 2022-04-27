@@ -122,12 +122,12 @@ const generateDestination = () => ({
 export const generateDestPoint = () =>{
   const time = generateTime();
   return{
-  type: eventTypes(),
-  price: generatePrice(),
-  offers: generateOffers(),
-  destination: generateDestination(),
-  date_from: time.beginDate,
-  date_to: time.endDate,
-  is_favorite: Boolean(getRandomInteger(0, 1))
-  }
+    type: eventTypes(),
+    price: generatePrice(),
+    offers: generateOffers(),
+    destination: generateDestination(),
+    date_from: time.beginDate,
+    date_to: time.endDate,
+    is_favorite: Boolean(getRandomInteger(0, 1))
+  };
 };

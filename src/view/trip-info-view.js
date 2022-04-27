@@ -16,7 +16,7 @@ const getTripInfo = (points) => {
           if (offer.isActive) { price += offer.price; }
         }));
 
-        const newCity = point.destination.name;
+    const newCity = point.destination.name;
     if (newCity !== lastCity) {
       route.push(newCity);
       lastCity = newCity;
