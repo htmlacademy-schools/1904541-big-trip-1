@@ -1,20 +1,22 @@
 import { getMonthDay, getDay } from '../tool.js';
+import { createElement } from '../render.js';
 
 const getTripInfo = (points) => {
-  const beginDate = points[0].time.beginDate;
-  const endDate = points[points.length - 1].time.endDate;
+  const dateFrom = points[0].dateFrom;
+  const dateTo = points[points.length - 1].dateTo;
   let price = 0;
   let route = [];
   let lastCity = '';
 
   for (const point of points) {
-    price += point.price;
+    price += point.basePrice;
     point.offers
-      .forEach((offer) => {
-        if (offer.isActive) { price += offer.price; }
-      });
+      .forEach((offerStruct) => offerStruct.offers
+        .forEach((offer) => {
+          if (offer.isActive) { price += offer.price; }
+        }));
 
-    const newCity = point.city;
+    const newCity = point.destination.name;
     if (newCity !== lastCity) {
       route.push(newCity);
       lastCity = newCity;
@@ -25,22 +27,50 @@ const getTripInfo = (points) => {
 
   return {
     price,
-    beginDate,
-    endDate,
+    dateFrom,
+    dateTo,
     route
   };
 };
 
-export const createTripInfoTemplate = (points) => {
-  const { price, beginDate, endDate, route } = getTripInfo(points);
+const createTripInfoTemplate = (points) => {
+  const { price, dateFrom, dateTo, route } = getTripInfo(points);
 
   return `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${route}</h1>
-      <p class="trip-info__dates">${getMonthDay(beginDate)}&nbsp;&mdash;&nbsp;${getDay(endDate)}</p>
+      <p class="trip-info__dates">${getMonthDay(dateFrom)}&nbsp;&mdash;&nbsp;${getDay(dateTo)}</p>
     </div>
     <p class="trip-info__cost">
       Total: &euro;&nbsp;<span class="trip-info__cost-value">${price}</span>
     </p>
   </section>`;
 };
+
+export default class TripInfoView {
+  #element = null;
+
+  constructor(points) {
+    this.points = points;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    if (this.points?.length > 0) {
+      return createTripInfoTemplate(this.points);
+    }
+
+    return ' ';
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

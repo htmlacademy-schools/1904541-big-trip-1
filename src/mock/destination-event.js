@@ -1,5 +1,6 @@
 import { getRandomInteger, getRandomElement, generateTime } from '../tool.js';
 
+const generatePrice = () => getRandomInteger(2, 60) * 10;
 const locations = () => {
   const cities = [
     'Moscow',
@@ -34,10 +35,21 @@ const eventTypes = () => {
 };
 
 
-const generatePrice = () => getRandomInteger(2, 60) * 10;
+const generatePictures = () => {
+  const phCount = getRandomInteger(1, 10);
+  const result = [];
+  for (let i = 0; i < phCount; i++) {
+    result.push({
+      src: `http://picsum.photos/248/152?r=${Math.random()}`,
+      description: `Picture ${i}`
+    });
+  }
+
+  return result;
+};
 
 const generateOffers = () => {
-  const offers = [];
+  const result = [];
   const titles = [
     'Add luggage',
     'Order Uber',
@@ -48,18 +60,28 @@ const generateOffers = () => {
     'Lunch in city'
   ];
 
-  for (let i = 0; i < getRandomInteger(0, 5); i++) {
-    const nextTitle = getRandomElement(titles);
-    offers.push(
-      {
-        title: nextTitle,
-        price: getRandomInteger(2, 30) * 10,
-        isActive: Boolean(getRandomInteger(0, 1))
-      });
-    titles.splice(titles.indexOf(nextTitle), 1);
+  for (let i = 0; i < getRandomInteger(1, 2); i++) {
+    const offers = [];
+
+    for (let j = 0; j < getRandomInteger(0, 3); j++) {
+      const nextTitle = getRandomElement(titles);
+      offers.push(
+        {
+          id: j + 1,
+          title: nextTitle,
+          price: getRandomInteger(2, 30) * 10,
+          isActive: Boolean(getRandomInteger(0, 1))
+        });
+      titles.splice(titles.indexOf(nextTitle), 1);
+    }
+
+    result.push({
+      type: eventTypes(),
+      offers
+    });
   }
 
-  return offers;
+  return result;
 };
 
 const generateDescription = () => {
@@ -88,23 +110,24 @@ const generateDescription = () => {
   return result;
 };
 
-const generatePhotoLinks = () => {
-  const phCount = getRandomInteger(1, 10);
-  const result = [];
-  for (let i = 0; i < phCount; i++) {
-    result.push(`http://picsum.photos/248/152?r=${Math.random()}`);
-  }
 
-  return result;
-};
-
-export const generateDestPoint = () => ({
-  type: eventTypes(),
-  city: locations(),
-  price: generatePrice(),
-  offers: generateOffers(),
+const generateDestination = () => ({
   description: generateDescription(),
-  photos: generatePhotoLinks(),
-  time: generateTime(),
-  isFavorite: Boolean(getRandomInteger(0, 1))
+  name: locations(),
+  pictures: generatePictures()
 });
+
+/* eslint-disable camelcase */
+
+export const generateDestPoint = () =>{
+  const time = generateTime();
+  return{
+    type: eventTypes(),
+    price: generatePrice(),
+    offers: generateOffers(),
+    destination: generateDestination(),
+    date_from: time.beginDate,
+    date_to: time.endDate,
+    is_favorite: Boolean(getRandomInteger(0, 1))
+  };
+};
