@@ -1,4 +1,4 @@
-// import EmptyListView from './view/empty-list-view.js';
+import EmptyListView from './view/empty-list-view.js';
 import {renderTemplate, RenderPosition} from './render.js';
 import TripTabsView from './view/trip-tabs-view.js';
 import TripFilterView from './view/trip-filters-view.js';
@@ -24,14 +24,14 @@ renderTemplate(tripMainElement, new TripInfoView(tripEvents).element, RenderPosi
 renderTemplate(siteMenuElement, new TripTabsView().element, RenderPosition.BEFOREEND);
 renderTemplate(filterElement, new TripFilterView().element, RenderPosition.BEFOREEND);
 
-// if (tripEvents?.length > 0) {
-renderTemplate(tripEventsElement, new TripSortView().element, RenderPosition.BEFOREEND);
-renderTemplate(tripEventsElement, new EventListView().element, RenderPosition.BEFOREEND);
-// }
-// else {
-//   const message = 'Click New Event to create your first point';
-//   renderTemplate(tripEventsElement, new EmptyListView(message).element, RenderPosition.BEFOREEND);
-// }
+if (tripEvents?.length > 0) {
+  renderTemplate(tripEventsElement, new TripSortView().element, RenderPosition.BEFOREEND);
+  renderTemplate(tripEventsElement, new EventListView().element, RenderPosition.BEFOREEND);
+}
+else {
+  const message = 'Click New Event to create your first point';
+  renderTemplate(tripEventsElement, new EmptyListView(message).element, RenderPosition.BEFOREEND);
+}
 
 const eventListElement = tripEventsElement.querySelector('.trip-events__list');
 
@@ -49,29 +49,29 @@ const renderPoint = (listElement, point) => {
     listElement.replaceChild(pointComponent.element, formEditComponent.element);
   };
 
-  // const onEscKeyDown = (evt) => {
-  //   if (evt.key === 'Escape' || evt.key === 'Esc') {
-  //     evt.preventDefault();
-  //     replaceFormToPoint();
-  //     document.removeEventListener('keydown', onEscKeyDown);
-  //   }
-  // };
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
 
   pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
     replacePointToForm();
-    // document.addEventListener('keydown', onEscKeyDown);
+    document.addEventListener('keydown', onEscKeyDown);
   });
 
   formEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
     evt.preventDefault();
     replaceFormToPoint();
-    // document.removeEventListener('keydown', onEscKeyDown);
+    document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  // formEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-  //   replaceFormToPoint();
-  //   document.removeEventListener('keydown', onEscKeyDown);
-  // });
+  formEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
 
   renderTemplate(listElement, pointComponent.element, RenderPosition.BEFOREEND);
 };
