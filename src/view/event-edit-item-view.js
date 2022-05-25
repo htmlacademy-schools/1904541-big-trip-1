@@ -1,5 +1,6 @@
-import { getFormDate, createFormOffersTemplate, createFormDescription } from '../tool.js';
-import { createElement } from '../render.js';
+import { createFormOffersTemplate, createFormDescription } from '../tools/template-tools.js';
+import { getFormDate } from '../tools/date.js';
+import AbstractView from './abstract-view.js';
 
 const createEventEditItemTemplate = (point) => {
   const { basePrice, dateFrom, dateTo, destination, id, offers, type } = point;
@@ -95,26 +96,35 @@ const createEventEditItemTemplate = (point) => {
   </li>`;
 };
 
-export default class EventEditItemView {
-  #element = null;
+export default class EventEditItemView 
+extends AbstractView{
+  #point = null;
 
   constructor(point) {
-    this.point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
+    super();
+    this.#point = point;
   }
 
   get template() {
-    return createEventEditItemTemplate(this.point);
+    return createEventEditItemTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+  }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 }
