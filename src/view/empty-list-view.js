@@ -4,9 +4,7 @@ const createEmptyListTemplate = (message) => (
   `<p class="trip-events__msg">${message}</p>`
 );
 
-export default class EmptyListView 
-extends AbstractView {
-  
+export default class EmptyListView extends AbstractView {
   #message = null;
 
   constructor(message) {

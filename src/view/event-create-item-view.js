@@ -94,8 +94,7 @@ const createFormCreateTemplate = (point) => {
   </li>`;
 };
 
-export default class EventCreateItemView 
-extends AbstractView {
+export default class EventCreateItemView extends AbstractView {
   #point = null;
 
   constructor(point) {

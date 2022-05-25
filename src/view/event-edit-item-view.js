@@ -96,8 +96,7 @@ const createEventEditItemTemplate = (point) => {
   </li>`;
 };
 
-export default class EventEditItemView 
-extends AbstractView{
+export default class EventEditItemView extends AbstractView{
   #point = null;
 
   constructor(point) {
@@ -113,6 +112,7 @@ extends AbstractView{
     this._callback.click = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
   }
+  
   #clickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();

@@ -63,7 +63,6 @@ const renderPoint = (listElement, point) => {
   });
 
   formEditComponent.setFormSubmitHandler(() => {
-    evt.preventDefault();
     replaceFormToPoint();
     document.removeEventListener('keydown', onEscKeyDown);
   });
