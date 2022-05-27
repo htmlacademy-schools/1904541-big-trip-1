@@ -1,4 +1,5 @@
-import { getRandomInteger, getRandomElement, generateTime } from '../tool.js';
+import { getRandomInteger, getRandomElement } from '../tools/random.js';
+import { generateTime } from '../tools/date.js';
 
 const generatePrice = () => getRandomInteger(2, 60) * 10;
 const locations = () => {
@@ -123,7 +124,7 @@ export const generateDestPoint = () =>{
   const time = generateTime();
   return{
     type: eventTypes(),
-    price: generatePrice(),
+    base_price: generatePrice(),
     offers: generateOffers(),
     destination: generateDestination(),
     date_from: time.beginDate,

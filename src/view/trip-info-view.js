@@ -1,5 +1,5 @@
-import { getMonthDay, getDay } from '../tool.js';
-import { createElement } from '../render.js';
+import { getMonthDay, getDay } from '../tools/date.js';
+import AbstractView from './abstract-view.js';
 
 const getTripInfo = (points) => {
   const dateFrom = points[0].dateFrom;
@@ -47,30 +47,19 @@ const createTripInfoTemplate = (points) => {
   </section>`;
 };
 
-export default class TripInfoView {
-  #element = null;
+export default class TripInfoView extends AbstractView{
+  #points = null;
 
   constructor(points) {
-    this.points = points;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
+    super();
+    this.#points = points;
   }
 
   get template() {
-    if (this.points?.length > 0) {
-      return createTripInfoTemplate(this.points);
+    if (this.#points?.length > 0) {
+      return createTripInfoTemplate(this.#points);
     }
 
     return ' ';
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
