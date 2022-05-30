@@ -1,3 +1,4 @@
+import {nanoid} from 'nanoid';
 import { getRandomInteger, getRandomElement } from '../tools/random.js';
 import { generateTime } from '../tools/date.js';
 
@@ -127,6 +128,7 @@ export const generateDestPoint = () =>{
     base_price: generatePrice(),
     offers: generateOffers(),
     destination: generateDestination(),
+    id: nanoid(),
     date_from: time.beginDate,
     date_to: time.endDate,
     is_favorite: Boolean(getRandomInteger(0, 1))
