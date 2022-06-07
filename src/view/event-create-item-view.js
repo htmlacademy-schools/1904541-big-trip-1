@@ -33,8 +33,8 @@ const createFormCreateTemplate = (point) => {
               <div class="event__type-item">
                 <input id="event-type-ship-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${type === 'ship' ? 'checked' : ''}>
                 <label class="event__type-label  event__type-label--ship" for="event-type-ship-${id}">Ship</label>
-              </div>
-              <div class="event__type-item">
+                </div>
+                <div class="event__type-item">
                 <input id="event-type-drive-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${type === 'drive' ? 'checked' : ''}>
                 <label class="event__type-label  event__type-label--drive" for="event-type-drive-${id}">Drive</label>
               </div>

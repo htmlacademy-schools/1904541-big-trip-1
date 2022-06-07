@@ -61,7 +61,7 @@ export const createOffersTemplate = (offerArray, type) => {
 
   const typeOffers = offerArray.filter((offerStruct) => offerStruct.type === type);
 
- if (typeOffers.length > 0) {
+  if (typeOffers.length > 0) {
     const offersTemplate = getOffersTemplate(typeOffers[0].offers);
 
     if (offersTemplate !== '')
