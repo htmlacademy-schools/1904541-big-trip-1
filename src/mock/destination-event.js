@@ -1,4 +1,4 @@
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomElement } from '../tools/random.js';
 import { generateTime } from '../tools/date.js';
 
@@ -21,21 +21,19 @@ const locations = () => {
   return getRandomElement(cities);
 };
 
-const eventTypes = () => {
-  const types = [
-    'Taxi',
-    'Bus',
-    'Train',
-    'Ship',
-    'Drive',
-    'Flight',
-    'Check-in',
-    'Sightseeing',
-    'Restaurant'
-  ];
-  return getRandomElement(types);
-};
+const types = [
+  'Taxi',
+  'Bus',
+  'Train',
+  'Ship',
+  'Drive',
+  'Flight',
+  'Check-in',
+  'Sightseeing',
+  'Restaurant'
+];
 
+const eventTypes = () => getRandomElement(types);
 
 const generatePictures = () => {
   const phCount = getRandomInteger(1, 10);
@@ -43,7 +41,7 @@ const generatePictures = () => {
   for (let i = 0; i < phCount; i++) {
     result.push({
       src: `http://picsum.photos/248/152?r=${Math.random()}`,
-      description: `Picture ${i}`
+      description: `Picture ${i}.`
     });
   }
 
@@ -52,20 +50,20 @@ const generatePictures = () => {
 
 const generateOffers = () => {
   const result = [];
-  const titles = [
-    'Add luggage',
-    'Order Uber',
-    'Switch to comfort',
-    'Rent a car',
-    'Add breakfast',
-    'Book tickets',
-    'Lunch in city'
-  ];
 
-  for (let i = 0; i < getRandomInteger(1, 2); i++) {
+  for (const type of types) {
     const offers = [];
+    const titles = [
+      'Add luggage',
+      'Order Uber',
+      'Switch to comfort',
+      'Rent a car',
+      'Add breakfast',
+      'Book tickets',
+      'Lunch in city'
+    ];
 
-    for (let j = 0; j < getRandomInteger(0, 3); j++) {
+    for (let j = 0; j < getRandomInteger(0, 5); j++) {
       const nextTitle = getRandomElement(titles);
       offers.push(
         {
@@ -78,7 +76,7 @@ const generateOffers = () => {
     }
 
     result.push({
-      type: eventTypes(),
+      type,
       offers
     });
   }
@@ -126,11 +124,11 @@ export const generateDestPoint = () =>{
   return{
     type: eventTypes(),
     base_price: generatePrice(),
-    offers: generateOffers(),
     destination: generateDestination(),
     id: nanoid(),
     date_from: time.beginDate,
     date_to: time.endDate,
-    is_favorite: Boolean(getRandomInteger(0, 1))
+    offers: generateOffers(),
+    is_favorite: Boolean(getRandomInteger(0, 1)),
   };
 };

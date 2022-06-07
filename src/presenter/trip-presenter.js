@@ -7,7 +7,7 @@ import TripSortView from '../view/trip-sort-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import PointPresenter from './point-presenter';
 import { updateItem } from '../tools/random.js';
-import {render, RenderPosition} from '../tools/render.js';
+import {render, RenderPosition, replace} from '../tools/render.js';
 
 export default class TripPresenter {
   #tripMainElement = null;
@@ -15,9 +15,10 @@ export default class TripPresenter {
   #filterElement = null;
   #tripEventsElement = null;
   #eventListElement = null;
+  #tripInfoComponent = null;
 
   #points = [];
-  #pointPresenter = new Map();
+  #pointPresenters = new Map();
 
   constructor() {
     this.#tripMainElement = document.querySelector('.trip-main');
@@ -28,18 +29,23 @@ export default class TripPresenter {
 
   init = (points) => {
     this.#points = [...points];
+    this.#tripInfoComponent = new TripInfoView(this.#points);
 
-    render(this.#tripMainElement, new TripInfoView(this.#points), RenderPosition.AFTERBEGIN);
+    render(this.#tripMainElement, this.#tripInfoComponent, RenderPosition.AFTERBEGIN);
     this.#renderTrip();
   }
 
   #handleModeChange = () => {
-    this.#pointPresenter.forEach((presenter) => presenter.resetView());
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
   }
 
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+
+    const oldTripComponent = this.#tripInfoComponent;
+    this.#tripInfoComponent = new TripInfoView(this.#points);
+    replace(this.#tripInfoComponent, oldTripComponent);
   }
 
   #renderNavigation = () => {
@@ -65,7 +71,7 @@ export default class TripPresenter {
   #renderPoint = (point) => {
     const pointPresenter = new PointPresenter(this.#eventListElement, this.#handlePointChange, this.#handleModeChange);
     pointPresenter.init(point);
-    this.#pointPresenter.set(point.id, pointPresenter);
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints = () => {
@@ -79,9 +85,9 @@ export default class TripPresenter {
     render(this.#tripEventsElement, new EmptyListView(message), RenderPosition.BEFOREEND);
   }
 
-  #clearTaskList = () => {
-    this.#pointPresenter.forEach((presenter) => presenter.destroy());
-    this.#pointPresenter.clear();
+  #clearPointList = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 
   #renderTrip = () => {
