@@ -33,8 +33,8 @@ const getTripInfo = (points) => {
   }
 
   route = route.length > 3
-  ? `${route[0]} &mdash; ... &mdash; ${route[route.length - 1]}`
-  : route.join(' &mdash; ');
+    ? `${route[0]} &mdash; ... &mdash; ${route[route.length - 1]}`
+    : route.join(' &mdash; ');
 
   return {
     price,
