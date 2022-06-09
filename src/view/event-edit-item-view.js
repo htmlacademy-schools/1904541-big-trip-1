@@ -112,6 +112,7 @@ export default class EventEditItemView extends SmartView{
   get template() {
     return createEventEditItemTemplate(this._point);
   }
+
   removeElement = () => {
     super.removeElement();
 
@@ -206,7 +207,7 @@ export default class EventEditItemView extends SmartView{
 
   #changeTypeHandler = (evt) => {
     evt.preventDefault();
-    
+
 
     const type = evt.target.value;
     const offers = JSON.parse(JSON.stringify(this._point.offers));

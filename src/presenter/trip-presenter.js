@@ -18,7 +18,7 @@ export default class TripPresenter {
   #eventListElement = null;
   #tripInfoComponent = null;
   #sortComponent = new TripSortView();
-  
+
   #points = [];
   #pointPresenters = new Map();
   #currentSortType = TripSortView.DAY;
@@ -49,9 +49,9 @@ export default class TripPresenter {
 
     const oldTripComponent = this.#tripInfoComponent;
     this.#tripInfoComponent = new TripInfoView(this.#points);
-    replace(this.#tripInfoComponent, oldTripComponent); 
+    replace(this.#tripInfoComponent, oldTripComponent);
     this.#sortPoints(this.#currentSortType);
-    this.#reRenderTrip(); 
+    this.#reRenderTrip();
   }
 
   #renderNavigation = () => {
@@ -134,7 +134,7 @@ export default class TripPresenter {
       this.#renderEmpty();
       return;
     }
-    
+
     this.#eventListElement = this.#tripEventsElement.querySelector('.trip-events__list');
     this.#renderFormCreate();
     this.#renderPoints();
