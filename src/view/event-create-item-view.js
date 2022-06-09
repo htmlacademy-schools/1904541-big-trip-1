@@ -4,7 +4,6 @@ import SmartView from './smart-view.js';
 
 const createFormCreateTemplate = (point) => {
   const { basePrice, dateFrom, dateTo, destination, id, offers, type } = point;
-  //const city = destination.name;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -123,7 +122,6 @@ export default class EventCreateItemView extends SmartView {
   #changeCityHandler = (evt) => {
     evt.preventDefault();
     this.updateData({ destination: { ...this._point.destination, ...{ name: evt.target.value } } });
-    // обновить описание и фотографии
   }
 
   #changeOptionsHandler = (evt) => {

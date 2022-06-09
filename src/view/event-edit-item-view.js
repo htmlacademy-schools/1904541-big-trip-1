@@ -1,6 +1,9 @@
 import { createFormOffersTemplate, createFormDescription } from '../tools/template-tools.js';
 import { getFormDate } from '../tools/date.js';
 import SmartView from './smart-view.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createEventEditItemTemplate = (point) => {
   const { basePrice, dateFrom, dateTo, destination, id, offers, type } = point;
@@ -98,6 +101,9 @@ const createEventEditItemTemplate = (point) => {
 
 export default class EventEditItemView extends SmartView{
 
+  #datepickerFrom = null;
+  #datepickerTo = null;
+
   constructor(point) {
     super();
     this._point = point;
@@ -106,57 +112,18 @@ export default class EventEditItemView extends SmartView{
   get template() {
     return createEventEditItemTemplate(this._point);
   }
+  removeElement = () => {
+    super.removeElement();
 
-  #formCloseHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.closeClick();
-  }
-
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit(this._point);
-  }
-
-  #changeTypeHandler = (evt) => {
-    evt.preventDefault();
-
-    const type = evt.target.value;
-    const offers = JSON.parse(JSON.stringify(this._point.offers));
-
-    for (const offerStruct of offers) {
-      if (offerStruct.type !== type) { continue; }
-
-      offerStruct.offers.forEach((offer) => {
-        offer.isActive = false;
-      });
-
-      break;
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
     }
 
-    this.updateData({ type, offers });
-  }
-
-  #changeCityHandler = (evt) => {
-    evt.preventDefault();
-    this.updateData({ destination: { ...this._point.destination, ...{ name: evt.target.value } } });
-    // обновить описание и фотографии
-  }
-
-  #changeOptionsHandler = (evt) => {
-    evt.preventDefault();
-    const splited = evt.target.id.split('-');
-    const index = +splited[splited.length - 1] - 1;
-    const offers = JSON.parse(JSON.stringify(this._point.offers));
-
-    for (const offerStruct of offers) {
-      if (offerStruct.type !== this._point.type) { continue; }
-
-      const e = offerStruct.offers[index];
-      e.isActive = !e.isActive;
-      break;
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
     }
-
-    this.updateData({ offers });
   }
 
   setFormCloseHandler = (callback) => {
@@ -179,5 +146,103 @@ export default class EventEditItemView extends SmartView{
 
   reset = (point) => {
     this.updateData(point);
+  }
+
+  /* eslint-disable camelcase */
+
+  setDatepicker = () => {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector(`#event-start-time-${this._point.id}`),
+      {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: 'j/m/y H:i',
+        defaultDate: this._point.dateFrom,
+        onChange: this.#dateFromChangeHandler
+      },
+    );
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector(`#event-end-time-${this._point.id}`),
+      {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: 'j/m/y H:i',
+        minDate: this._point.dateFrom,
+        defaultDate: this._point.dateTo,
+        onChange: this.#dateToChangeHandler
+      },
+    );
+  }
+
+  /* eslint-enable camelcase */
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateFrom: userDate,
+    });
+
+    if (userDate > this._point.dateTo) {
+      this.updateData({
+        dateTo: userDate,
+      });
+    }
+  }
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateTo: userDate,
+    });
+  }
+
+  #formCloseHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeClick();
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(this._point);
+  }
+
+  #changeTypeHandler = (evt) => {
+    evt.preventDefault();
+    
+
+    const type = evt.target.value;
+    const offers = JSON.parse(JSON.stringify(this._point.offers));
+
+    for (const offerStruct of offers) {
+      if (offerStruct.type !== type) { continue; }
+
+      offerStruct.offers.forEach((offer) => {
+        offer.isActive = false;
+      });
+
+      break;
+    }
+
+    this.updateData({ type, offers });
+  }
+
+  #changeCityHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({ destination: { ...this._point.destination, ...{ name: evt.target.value } } });
+  }
+
+  #changeOptionsHandler = (evt) => {
+    evt.preventDefault();
+    const splited = evt.target.id.split('-');
+    const index = +splited[splited.length - 1] - 1;
+    const offers = JSON.parse(JSON.stringify(this._point.offers));
+
+    for (const offerStruct of offers) {
+      if (offerStruct.type !== this._point.type) { continue; }
+
+      const e = offerStruct.offers[index];
+      e.isActive = !e.isActive;
+      break;
+    }
+
+    this.updateData({ offers });
   }
 }
