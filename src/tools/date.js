@@ -22,6 +22,7 @@ const formatDate = (date, formatter) =>
 
 export const getDay = (date) => formatDate(date, 'D');
 export const getMonthDay = (date) => formatDate(date, 'MMM D');
+export const getDayMonth = (date) => formatDate(date, 'D MMM');
 export const getDate = (date) => formatDate(date, 'YYYY-MM-DD');
 export const getTime = (date) => formatDate(date, 'HH:mm');
 export const getDatetime = (date) => formatDate(date, 'YYYY-MM-DDTHH:mm');

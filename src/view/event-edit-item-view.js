@@ -1,6 +1,9 @@
 import { createFormOffersTemplate, createFormDescription } from '../tools/template-tools.js';
 import { getFormDate } from '../tools/date.js';
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createEventEditItemTemplate = (point) => {
   const { basePrice, dateFrom, dateTo, destination, id, offers, type } = point;
@@ -18,39 +21,39 @@ const createEventEditItemTemplate = (point) => {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
               <div class="event__type-item">
-                <input id="event-type-taxi-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-${id}">Taxi</label>
+              <input id="event-type-taxi-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="taxi" ${type === 'taxi' ? 'checked' : ''}>
+              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-${id}">Taxi</label>
               </div>
               <div class="event__type-item">
                 <input id="event-type-bus-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                <label class="event__type-label  event__type-label--bus" for="event-type-bus-${id}">Bus</label>
+                <input id="event-type-bus-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="bus" ${type === 'bus' ? 'checked' : ''}>
               </div>
               <div class="event__type-item">
-                <input id="event-type-train-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
+                <input id="event-type-train-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="train" ${type === 'train' ? 'checked' : ''}>
                 <label class="event__type-label  event__type-label--train" for="event-type-train-${id}">Train</label>
               </div>
               <div class="event__type-item">
-                <input id="event-type-ship-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
+                <input id="event-type-ship-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="ship" ${type === 'ship' ? 'checked' : ''}>
                 <label class="event__type-label  event__type-label--ship" for="event-type-ship-${id}">Ship</label>
               </div>
               <div class="event__type-item">
-                <input id="event-type-drive-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
+                <input id="event-type-drive-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="drive" ${type === 'drive' ? 'checked' : ''}>
                 <label class="event__type-label  event__type-label--drive" for="event-type-drive-${id}">Drive</label>
               </div>
               <div class="event__type-item">
-                <input id="event-type-flight-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+                <input id="event-type-flight-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="flight" ${type === 'flight' ? 'checked' : ''}>
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-${id}">Flight</label>
               </div>
               <div class="event__type-item">
-                  <input id="event-type-check-in-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                  <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-${id}">Check-in</label>
+                <input id="event-type-check-in-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="check-in" ${type === 'check-in' ? 'checked' : ''}>
+                <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-${id}">Check-in</label>
               </div>
               <div class="event__type-item">
-                <input id="event-type-sightseeing-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
+                <input id="event-type-sightseeing-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="sightseeing" ${type === 'sightseeing' ? 'checked' : ''}>
                 <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-${id}">Sightseeing</label>
               </div>
               <div class="event__type-item">
-                <input id="event-type-restaurant-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
+                <input id="event-type-restaurant-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="restaurant" ${type === 'restaurant' ? 'checked' : ''}>
                 <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-${id}">Restaurant</label>
               </div>
             </fieldset>
@@ -88,7 +91,7 @@ const createEventEditItemTemplate = (point) => {
         </button>
       </header>
       <section class="event__details">
-      ${createFormOffersTemplate(offers)}
+      ${createFormOffersTemplate(offers, type)}
       ${createFormDescription(destination.description)}
         
       </section>
@@ -96,35 +99,151 @@ const createEventEditItemTemplate = (point) => {
   </li>`;
 };
 
-export default class EventEditItemView extends AbstractView{
-  #point = null;
+export default class EventEditItemView extends SmartView{
+
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor(point) {
     super();
-    this.#point = point;
+    this._point = point;
   }
 
   get template() {
-    return createEventEditItemTemplate(this.#point);
+    return createEventEditItemTemplate(this._point);
   }
 
-  #clickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.click();
-  }
+  removeElement = () => {
+    super.removeElement();
 
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit(this.#point);
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
   }
 
   setFormCloseHandler = (callback) => {
-    this._callback.click = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+    this._callback.closeClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
   }
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setInnerHandlers = () => {
+    this.element.querySelector('.event__type-list').addEventListener('input', this.#changeTypeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeCityHandler);
+
+    const offers = this.element.querySelector('.event__available-offers');
+    if (offers) { offers.addEventListener('input', this.#changeOptionsHandler); }
+  }
+
+  reset = (point) => {
+    this.updateData(point);
+  }
+
+  /* eslint-disable camelcase */
+
+  setDatepicker = () => {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector(`#event-start-time-${this._point.id}`),
+      {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: 'j/m/y H:i',
+        defaultDate: this._point.dateFrom,
+        onChange: this.#dateFromChangeHandler
+      },
+    );
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector(`#event-end-time-${this._point.id}`),
+      {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: 'j/m/y H:i',
+        minDate: this._point.dateFrom,
+        defaultDate: this._point.dateTo,
+        onChange: this.#dateToChangeHandler
+      },
+    );
+  }
+
+  /* eslint-enable camelcase */
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateFrom: userDate,
+    });
+
+    if (userDate > this._point.dateTo) {
+      this.updateData({
+        dateTo: userDate,
+      });
+    }
+  }
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateTo: userDate,
+    });
+  }
+
+  #formCloseHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeClick();
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(this._point);
+  }
+
+  #changeTypeHandler = (evt) => {
+    evt.preventDefault();
+
+
+    const type = evt.target.value;
+    const offers = JSON.parse(JSON.stringify(this._point.offers));
+
+    for (const offerStruct of offers) {
+      if (offerStruct.type !== type) { continue; }
+
+      offerStruct.offers.forEach((offer) => {
+        offer.isActive = false;
+      });
+
+      break;
+    }
+
+    this.updateData({ type, offers });
+  }
+
+  #changeCityHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({ destination: { ...this._point.destination, ...{ name: evt.target.value } } });
+  }
+
+  #changeOptionsHandler = (evt) => {
+    evt.preventDefault();
+    const splited = evt.target.id.split('-');
+    const index = +splited[splited.length - 1] - 1;
+    const offers = JSON.parse(JSON.stringify(this._point.offers));
+
+    for (const offerStruct of offers) {
+      if (offerStruct.type !== this._point.type) { continue; }
+
+      const e = offerStruct.offers[index];
+      e.isActive = !e.isActive;
+      break;
+    }
+
+    this.updateData({ offers });
   }
 }

@@ -7,7 +7,8 @@ import TripSortView from '../view/trip-sort-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import PointPresenter from './point-presenter';
 import { updateItem } from '../tools/random.js';
-import {render, RenderPosition} from '../tools/render.js';
+import {render, RenderPosition, replace} from '../tools/render.js';
+import { sortPointsByDay, sortPointsByTime, sortPointsByPrice } from '../tools/template-tools.js';
 
 export default class TripPresenter {
   #tripMainElement = null;
@@ -15,9 +16,12 @@ export default class TripPresenter {
   #filterElement = null;
   #tripEventsElement = null;
   #eventListElement = null;
+  #tripInfoComponent = null;
+  #sortComponent = new TripSortView();
 
   #points = [];
-  #pointPresenter = new Map();
+  #pointPresenters = new Map();
+  #currentSortType = TripSortView.DAY;
 
   constructor() {
     this.#tripMainElement = document.querySelector('.trip-main');
@@ -28,18 +32,26 @@ export default class TripPresenter {
 
   init = (points) => {
     this.#points = [...points];
+    this.#currentSortType = TripSortView.DAY;
+    this.#sortPoints(this.#currentSortType);
+    this.#tripInfoComponent = new TripInfoView(this.#points);
 
-    render(this.#tripMainElement, new TripInfoView(this.#points), RenderPosition.AFTERBEGIN);
+    render(this.#tripMainElement, this.#tripInfoComponent, RenderPosition.AFTERBEGIN);
     this.#renderTrip();
   }
 
   #handleModeChange = () => {
-    this.#pointPresenter.forEach((presenter) => presenter.resetView());
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
   }
 
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+
+    const oldTripComponent = this.#tripInfoComponent;
+    this.#tripInfoComponent = new TripInfoView(this.#points);
+    replace(this.#tripInfoComponent, oldTripComponent);
+    this.#sortPoints(this.#currentSortType);
+    this.#reRenderTrip();
   }
 
   #renderNavigation = () => {
@@ -50,8 +62,34 @@ export default class TripPresenter {
     render(this.#filterElement, new TripFilterView(), RenderPosition.BEFOREEND);
   }
 
+  #sortPoints = (sortType) => {
+    switch (sortType) {
+      case TripSortView.DAY:
+        this.#points.sort(sortPointsByDay);
+        break;
+      case TripSortView.TIME:
+        this.#points.sort(sortPointsByTime);
+        break;
+      case TripSortView.PRICE:
+        this.#points.sort(sortPointsByPrice);
+        break;
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortPoints(sortType);
+    this.#reRenderTrip();
+  }
+
   #renderSort = () => {
     render(this.#tripEventsElement, new TripSortView(), RenderPosition.BEFOREEND);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
   #renderEventList = () => {
@@ -65,7 +103,7 @@ export default class TripPresenter {
   #renderPoint = (point) => {
     const pointPresenter = new PointPresenter(this.#eventListElement, this.#handlePointChange, this.#handleModeChange);
     pointPresenter.init(point);
-    this.#pointPresenter.set(point.id, pointPresenter);
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints = () => {
@@ -79,9 +117,9 @@ export default class TripPresenter {
     render(this.#tripEventsElement, new EmptyListView(message), RenderPosition.BEFOREEND);
   }
 
-  #clearTaskList = () => {
-    this.#pointPresenter.forEach((presenter) => presenter.destroy());
-    this.#pointPresenter.clear();
+  #clearPointList = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 
   #renderTrip = () => {
@@ -99,6 +137,11 @@ export default class TripPresenter {
 
     this.#eventListElement = this.#tripEventsElement.querySelector('.trip-events__list');
     this.#renderFormCreate();
+    this.#renderPoints();
+  }
+
+  #reRenderTrip = () => {
+    this.#clearPointList();
     this.#renderPoints();
   }
 }
