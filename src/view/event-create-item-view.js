@@ -85,7 +85,7 @@ const createFormCreateTemplate = (point) => {
         <button class="event__reset-btn" type="reset">Cancel</button>
       </header>
       <section class="event__details">
-        ${createFormOffersTemplate(offers, type)}
+        ${createFormOffersTemplate(offers, true)}
         ${createFormDescription(destination.description, destination.pictures)}
         
       </section>
