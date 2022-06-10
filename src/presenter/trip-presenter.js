@@ -136,7 +136,7 @@ export default class TripPresenter {
     }
 
     this.#eventListElement = this.#tripEventsElement.querySelector('.trip-events__list');
-    this.#renderFormCreate();
+    // this.#renderFormCreate();
     this.#renderPoints();
   }
 

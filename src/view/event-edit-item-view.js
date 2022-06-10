@@ -91,7 +91,7 @@ const createEventEditItemTemplate = (point) => {
         </button>
       </header>
       <section class="event__details">
-      ${createFormOffersTemplate(offers, type)}
+      ${createFormOffersTemplate(offers)}
       ${createFormDescription(destination.description)}
         
       </section>
@@ -142,7 +142,8 @@ export default class EventEditItemView extends SmartView{
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeCityHandler);
 
     const offers = this.element.querySelector('.event__available-offers');
-    if (offers) { offers.addEventListener('input', this.#changeOptionsHandler); }
+    if (offers) { 
+      offers.addEventListener('input', this.#changeOptionsHandler); }
   }
 
   reset = (point) => {
@@ -234,15 +235,14 @@ export default class EventEditItemView extends SmartView{
     evt.preventDefault();
     const splited = evt.target.id.split('-');
     const index = +splited[splited.length - 1] - 1;
-    const offers = JSON.parse(JSON.stringify(this._point.offers));
+    const offers = JSON.parse(JSON.stringify(this._point.offers))
 
-    for (const offerStruct of offers) {
-      if (offerStruct.type !== this._point.type) { continue; }
-
-      const e = offerStruct.offers[index];
+    // for (const offerStruct of offers) {
+      // if (offerStruct.type !== this._point.type) { continue; }
+      const e = offers[index];
       e.isActive = !e.isActive;
-      break;
-    }
+      // break;
+    // }
 
     this.updateData({ offers });
   }

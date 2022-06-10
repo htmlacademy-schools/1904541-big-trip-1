@@ -51,8 +51,6 @@ const generatePictures = () => {
 const generateOffers = () => {
   const result = [];
 
-  for (const type of types) {
-    const offers = [];
     const titles = [
       'Add luggage',
       'Order Uber',
@@ -65,22 +63,16 @@ const generateOffers = () => {
 
     for (let j = 0; j < getRandomInteger(0, 5); j++) {
       const nextTitle = getRandomElement(titles);
-      offers.push(
+      result.push(
         {
           id: j + 1,
           title: nextTitle,
           price: getRandomInteger(2, 30) * 10,
-          isActive: Boolean(getRandomInteger(0, 1))
+          isActive: Boolean(getRandomInteger(0, 1)),
+          type: eventTypes()
         });
       titles.splice(titles.indexOf(nextTitle), 1);
     }
-
-    result.push({
-      type,
-      offers
-    });
-  }
-
   return result;
 };
 
